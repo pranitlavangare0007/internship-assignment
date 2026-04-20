@@ -1,4 +1,4 @@
-package com.pranit.assignment;
+package com.pranit.assignment.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
