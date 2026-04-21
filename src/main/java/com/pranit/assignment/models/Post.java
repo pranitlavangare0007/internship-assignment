@@ -1,5 +1,6 @@
 package com.pranit.assignment.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pranit.assignment.entity.AuthorType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,13 @@ public class Post {
     private String content;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Comment> comments;
 
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

@@ -1,5 +1,6 @@
 package com.pranit.assignment.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pranit.assignment.entity.AuthorType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     private Post post;
 
     private Long authorId;

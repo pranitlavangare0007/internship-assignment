@@ -1,5 +1,6 @@
 package com.pranit.assignment.services;
 
+import com.pranit.assignment.entity.AuthorType;
 import com.pranit.assignment.models.Comment;
 import com.pranit.assignment.models.Post;
 import com.pranit.assignment.repos.CommentRepo;
@@ -34,8 +35,13 @@ public class PostService {
 
         Comment saved = commentRepo.save(comment);
 
+       if(comment.getAuthorType()== AuthorType.USER ){
+           viralityService.updateScore(postId, "HUMAN_COMMENT");
+       }else {
+           viralityService.updateScore(postId, "BOT_REPLY");
+       }
 
-        viralityService.updateScore(postId, "HUMAN_COMMENT");
+
 
         return saved;
     }
