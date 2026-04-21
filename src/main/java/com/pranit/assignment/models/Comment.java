@@ -28,6 +28,12 @@ public class Comment {
     private String content;
 
     private int depthLevel;
+    private Long parentAuthorId;
+    private AuthorType parentAuthorType;
 
     private LocalDateTime createdAt;
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

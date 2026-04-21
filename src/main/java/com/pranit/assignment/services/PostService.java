@@ -6,7 +6,10 @@ import com.pranit.assignment.models.Post;
 import com.pranit.assignment.repos.CommentRepo;
 import com.pranit.assignment.repos.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PostService {
@@ -20,6 +23,9 @@ public class PostService {
     @Autowired
     private ViralityService viralityService;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     public Post createPost(Post post) {
         return postRepo.save(post);
     }
@@ -31,6 +37,41 @@ public class PostService {
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
+        if (comment.getDepthLevel() > 20) {
+            throw new RuntimeException("Depth limit exceeded (max 20)");
+        }
+        if (comment.getAuthorType() == AuthorType.BOT) {
+
+
+            String botCountKey = "post:" + postId + ":bot_count";
+
+            Long count = redisTemplate.opsForValue().increment(botCountKey);
+
+            if (count != null && count > 100) {
+
+                redisTemplate.opsForValue().decrement(botCountKey);
+                throw new RuntimeException("429 Too Many Requests - Bot limit reached");
+            }
+
+
+            if (comment.getParentAuthorType() == AuthorType.USER) {
+
+                String cooldownKey =
+                        "cooldown:bot_" + comment.getAuthorId() +
+                                ":human_" + comment.getParentAuthorId();
+
+                Boolean exists = redisTemplate.hasKey(cooldownKey);
+
+                if (Boolean.TRUE.equals(exists)) {
+
+                    redisTemplate.opsForValue().decrement(botCountKey);
+                    throw new RuntimeException("Cooldown active - try after 10 minutes");
+                }
+
+
+                redisTemplate.opsForValue().set(cooldownKey, "1", 10, TimeUnit.MINUTES);
+            }
+        }
         comment.setPost(post);
 
         Comment saved = commentRepo.save(comment);
@@ -45,6 +86,8 @@ public class PostService {
 
         return saved;
     }
+
+
     public void likePost(Long postId) {
 
         if (!postRepo.existsById(postId)) {
