@@ -1,4 +1,4 @@
-# 🚀 AI Backend Assignment – Redis-Powered Social Engine
+#  Backend Assignment – Redis-Powered Social Engine
 
 ## 📌 Overview
 
