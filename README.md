@@ -28,7 +28,7 @@ The system is designed to handle **high concurrency scenarios** while maintainin
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/pranitlavangare0007/internship-assignment.git
 cd assignment
 ```
 
