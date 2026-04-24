@@ -226,6 +226,124 @@ Included in repository for API testing.
 
 ---
 
+## 🧪 Horizontal Cap Test (Postman Runner)
+
+To verify that the system correctly enforces the **maximum 100 bot replies per post**, follow these steps:
+
+---
+
+### 📌 Prerequisites
+
+* Ensure your application is running on `http://localhost:8080`
+* Make sure a post with `postId = 1` exists
+* Ensure at least one bot exists (e.g., `authorId = 2`)
+
+---
+
+### 📝 Step 1: Prepare Request
+
+Use the following API:
+
+```http
+POST /api/posts/1/comments
+```
+
+#### Request Body
+
+```json
+{
+  "authorId": 2,
+  "authorType": "BOT",
+  "content": "Bot reply load test",
+  "depthLevel": 0,
+  "parentAuthorId": 3,
+  "parentAuthorType": "BOT"
+}
+```
+
+> ⚠️ Note:
+> Using `parentAuthorType = BOT` ensures the **cooldown rule is not triggered**, allowing proper horizontal cap testing.
+
+---
+
+### ▶️ Step 2: Open Postman Runner
+
+1. Open Postman
+2. Save the above request in a collection
+3. Click on **"Run"** (Runner icon ▶️)
+4. Select the saved request
+
+---
+
+### ⚙️ Step 3: Configure Runner
+
+Set the following:
+
+```text
+Iterations: 200
+Delay: 0 ms
+```
+
+---
+
+### 🚀 Step 4: Run Test
+
+Click:
+
+```text
+Run <Collection Name>
+```
+
+---
+
+### ✅ Expected Results
+
+| Request Range | Result                  |
+| ------------- | ----------------------- |
+| 1 – 100       | ✅ Success               |
+| 101 – 200     | ❌ 429 Too Many Requests |
+
+---
+
+### 🔍 Step 5: Verify Results
+
+#### Check PostgreSQL
+
+```sql
+SELECT COUNT(*) FROM comment;
+```
+
+Expected:
+
+```text
+100
+```
+
+---
+
+#### Check Redis
+
+```bash
+GET post:1:bot_count
+```
+
+Expected:
+
+```text
+100
+```
+
+---
+
+### 🧠 Conclusion
+
+* The system correctly enforces the **horizontal cap limit (100 bot replies)**
+* Redis atomic operations ensure **thread-safe concurrency control**
+* Database integrity is maintained under high load conditions
+
+---
+
+
 ## 🧪 Database & Redis Verification Commands
 
 ### 🐘 PostgreSQL (Docker)
