@@ -1,7 +1,10 @@
 package com.pranit.assignment.controllers;
 
+import com.pranit.assignment.models.Bot;
 import com.pranit.assignment.models.Comment;
 import com.pranit.assignment.models.Post;
+import com.pranit.assignment.models.User;
+import com.pranit.assignment.services.CreateBotAndUserService;
 import com.pranit.assignment.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +16,14 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+
     @PostMapping
     public Post createPost(@RequestBody Post post) {
         return postService.createPost(post);
     }
+
+
+
 
     @PostMapping("/{postId}/comments")
     public Comment addComment(@PathVariable Long postId,

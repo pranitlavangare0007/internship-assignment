@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "AI Assignment API Collection",
+    "_postman_id": "12345-abcde-collection",
+    "description": "Test all features: posts, comments, limits, redis logic",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8080" }
+  ],
+  "item": [
+
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"pranit\",\n  \"isPremium\": true\n}"
+        }
+      }
+    },
+
+    {
+      "name": "Create Bot",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/bots",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"bot1\",\n  \"personaDescription\": \"friendly bot\"\n}"
+        }
+      }
+    },
+
+    {
+      "name": "Create Post",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/posts",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"authorId\": 1,\n  \"authorType\": \"USER\",\n  \"content\": \"My first post\"\n}"
+        }
+      }
+    },
+
+    {
+      "name": "Human Comment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/posts/1/comments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"authorId\": 1,\n  \"authorType\": \"USER\",\n  \"content\": \"Nice post\",\n  \"depthLevel\": 0,\n  \"parentAuthorId\": 1,\n  \"parentAuthorType\": \"USER\"\n}"
+        }
+      }
+    },
+
+    {
+      "name": "Bot Comment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/posts/1/comments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"authorId\": 2,\n  \"authorType\": \"BOT\",\n  \"content\": \"Bot reply\",\n  \"depthLevel\": 0,\n  \"parentAuthorId\": 1,\n  \"parentAuthorType\": \"USER\"\n}"
+        }
+      }
+    },
+
+    {
+      "name": "Vertical Cap Test (Fail)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/posts/1/comments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"authorId\": 1,\n  \"authorType\": \"USER\",\n  \"content\": \"Too deep\",\n  \"depthLevel\": 25,\n  \"parentAuthorId\": 1,\n  \"parentAuthorType\": \"USER\"\n}"
+        }
+      }
+    },
+
+    {
+      "name": "Cooldown Test (Fail)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/posts/1/comments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"authorId\": 2,\n  \"authorType\": \"BOT\",\n  \"content\": \"Second reply\",\n  \"depthLevel\": 0,\n  \"parentAuthorId\": 1,\n  \"parentAuthorType\": \"USER\"\n}"
+        }
+      }
+    },
+
+    {
+      "name": "Like Post",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/posts/1/like"
+      }
+    },
+
+    {
+      "name": "Check Redis Score (Optional API)",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/score/1"
+      }
+    }
+
+  ]
+}
