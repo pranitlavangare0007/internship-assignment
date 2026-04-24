@@ -226,6 +226,109 @@ Included in repository for API testing.
 
 ---
 
+## 🧪 Database & Redis Verification Commands
+
+### 🐘 PostgreSQL (Docker)
+
+#### 🔌 Connect to Database
+
+```bash
+docker exec -it postgres_db psql -U postgres -d assignment_db
+```
+
+#### 📋 Show Tables
+
+```sql
+\dt
+```
+
+#### 📄 View Data
+
+```sql
+SELECT * FROM posts;
+SELECT * FROM comment;
+SELECT * FROM users;
+SELECT * FROM bot;
+```
+
+#### 🔢 Count Comments (Horizontal Cap Test)
+
+```sql
+SELECT COUNT(*) FROM comment;
+```
+
+#### ❌ Exit
+
+```sql
+\q
+```
+
+---
+
+### 🔴 Redis (Docker)
+
+#### 🔌 Connect to Redis
+
+```bash
+docker exec -it redis_db redis-cli
+```
+
+#### 🔑 List All Keys
+
+```bash
+KEYS *
+```
+
+#### 📊 Check Virality Score
+
+```bash
+GET post:1:virality_score
+```
+
+#### 🤖 Check Bot Reply Count (Horizontal Cap)
+
+```bash
+GET post:1:bot_count
+```
+
+#### ⏱️ Check Cooldown Keys
+
+```bash
+KEYS cooldown:*
+```
+
+#### 🔔 Check Pending Notifications
+
+```bash
+LRANGE user:1:pending_notifs 0 -1
+```
+
+#### 🗑️ Delete Keys (for testing reset)
+
+```bash
+DEL post:1:bot_count
+DEL cooldown:bot_2:human_1
+```
+
+#### ❌ Exit Redis
+
+```bash
+exit
+```
+
+---
+
+### 🧠 Notes
+
+* **PostgreSQL** → Stores actual data (posts, comments, users, bots)
+* **Redis** → Stores counters, cooldowns, and notification queues
+* Horizontal cap test is successful when:
+
+```text
+SELECT COUNT(*) FROM comment; = 100
+```
+
+
 ## 📌 Key Highlights
 
 * 🚀 Handles high concurrency safely
